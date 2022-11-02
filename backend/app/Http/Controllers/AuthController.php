@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -19,7 +20,7 @@ class AuthController extends Controller
                 'confirmed',
                 Password::min(8)->mixedCase()->numbers()
             ]
-            ]);
+        ]);
 
 
         $user = User::create([
@@ -46,17 +47,14 @@ class AuthController extends Controller
             'remember' => 'boolean'
         ]);
 
-        $remember = $validatedData['remember']?? false;
+        $remember = $validatedData['remember'] ?? false;
         unset($validatedData['remember']);
 
-        if(!Auth::attempt($validatedData, $remember))
-        {
-            return response([
-                'error' => 'The Provided Credentials are not correct'
-            ], 422);
+        if (!Auth::attempt($validatedData, $remember)) {
+            throw ValidationException::withMessages(['email' => 'Provided credentials are incorrect']);
         }
 
-        $user= Auth::user();
+        $user = Auth::user();
 
         $token = $user->createToken('main')->plainTextToken;
 

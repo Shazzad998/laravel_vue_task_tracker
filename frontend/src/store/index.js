@@ -52,6 +52,8 @@ const store = createStore({
       token: sessionStorage.getItem("TOKEN"),
     },
 
+    errors: [],
+
     tasks: [...tempTasks],
   },
   getters: {},
@@ -63,17 +65,28 @@ const store = createStore({
       });
     },
     register({ commit }, user) {
-      return axiosClient.post("/register", user).then(({ data }) => {
-        commit("setUser", data);
-        return data;
-      });
+      return axiosClient
+        .post("/register", user)
+        .then(({ data }) => {
+          commit("setUser", data);
+          return data;
+        })
+        .catch((e) => {
+          commit("setError", e);
+          throw e;
+        });
     },
 
     login({ commit }, user) {
-      return axiosClient.post("/login", user).then(({ data }) => {
-        commit("setUser", data);
-        return data;
-      });
+      return axiosClient
+        .post("/login", user)
+        .then(({ data }) => {
+          commit("setUser", data);
+          return data;
+        })
+        .catch((e) => {
+          commit("setError", e);
+        });
     },
   },
   mutations: {
@@ -87,6 +100,10 @@ const store = createStore({
       state.user.data = userData.data;
       state.user.token = userData.token;
       sessionStorage.setItem("TOKEN", userData.token);
+    },
+
+    setError: (state, errorData) => {
+      state.errors = errorData.response.data.errors;
     },
   },
 

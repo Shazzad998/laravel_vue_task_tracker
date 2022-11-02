@@ -16,6 +16,9 @@
         placeholder="Enter Email"
         v-model="user.email"
       />
+      <div v-if="store.state.errors.email" class="mt-1 text-xs text-red-600">
+        {{ store.state.errors.email[0] }}
+      </div>
     </div>
 
     <div class="mb-3 flex flex-col">
@@ -29,6 +32,10 @@
         placeholder="Enter Password"
         v-model="user.password"
       />
+
+      <div v-if="store.state.errors.password" class="mt-1 text-xs text-red-600">
+        {{ store.state.errors.password[0] }}
+      </div>
     </div>
 
     <div class="mb-3 flex items-center">
@@ -75,12 +82,17 @@ export default {
     const router = useRouter();
 
     function login() {
-      store.dispatch("login", user).then(({ data }) => {
-        router.push("dashboard");
-      });
+      store
+        .dispatch("login", user)
+        .then(({ data }) => {
+          router.push("dashboard");
+        })
+        .catch(() => {
+          console.log(store.state.errors);
+        });
     }
 
-    return { user, login };
+    return { user, store, login };
   },
 };
 </script>

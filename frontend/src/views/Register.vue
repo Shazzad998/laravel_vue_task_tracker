@@ -19,6 +19,9 @@
         placeholder="Enter Full Name"
         v-model="user.name"
       />
+      <div v-if="store.state.errors.name" class="mt-1 text-xs text-red-600">
+        {{ store.state.errors.name[0] }}
+      </div>
     </div>
 
     <div class="mb-3 flex flex-col">
@@ -32,6 +35,10 @@
         placeholder="Enter Email"
         v-model="user.email"
       />
+
+      <div v-if="store.state.errors.email" class="mt-1 text-xs text-red-600">
+        {{ store.state.errors.email[0] }}
+      </div>
     </div>
 
     <div class="mb-3 flex flex-col">
@@ -45,6 +52,9 @@
         placeholder="Enter Password"
         v-model="user.password"
       />
+      <div v-if="store.state.errors.password" class="mt-1 text-xs text-red-600">
+        {{ store.state.errors.password[0] }}
+      </div>
     </div>
 
     <div class="mb-3 flex flex-col">
@@ -95,15 +105,19 @@ export default {
     };
 
     function register() {
-      store.dispatch("register", user).then(() => {
-        router.push({
-          name: "dashboard",
-        });
-      });
+      store
+        .dispatch("register", user)
+        .then(() => {
+          router.push({
+            name: "dashboard",
+          });
+        })
+        .catch((e) => {});
     }
 
     return {
       user,
+      store,
       register,
     };
   },
